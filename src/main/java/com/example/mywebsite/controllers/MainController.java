@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class MainController {
@@ -30,17 +29,17 @@ public class MainController {
 
     @GetMapping("/")
         public  String showMainPage(Model model) throws IOException {
-//            Map<String, List<String>> data = readPriceService.getProductsByCategory();
+//            readPriceService.saveInDbCategoryProduct();
             Iterable<Category> categories = categoryRepository.findAll();
             model.addAttribute("categories", categories);
             return "index";
         }
 
-    @GetMapping("/categorie/{categoryId}/prodducts")
+    @GetMapping("/category/{categoryId}/products")
         public String showProductByCategory(@PathVariable Long categoryId, Model model){
             Category category = categoryRepository.findById(categoryId).orElse(null);
             if (category != null){
-                List<Product> products = productRepository.findByCategoryId(category.getId());
+                List<Product> products = productRepository.findByCategory(category);
                 model.addAttribute("products", products);
                 return "products-by-category";
             }

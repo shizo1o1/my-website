@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:text="${title}" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+</head>
+<body>
+<header th:insert="~{blocks/header :: header} " class="allert allert-info mt-2"></header>
+
+<h1>Products</h1>
+  <table>
+    <tr>
+      <th>Artucle</th>
+      <th>Name</th>
+      <th>Price</th>
+      <th>Description</th>
+    </tr>
+    <tr th:each="product : ${products}">
+      <td th:text="${product.article}"></td>
+      <td th:text="${product.name}"></td>
+      <td th:text="${product.price}"></td>
+      <td th:text="${product.description}"></td>
+    </tr>
+  </table>
+
+<footer th:insert="~{blocks/footer :: footer} "></footer>
+</body>
+</html>

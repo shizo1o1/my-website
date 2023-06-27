@@ -12,8 +12,11 @@ public class Product {
     private double price;
     @Column(length = 500)
     private String description;
-    private Long categoryId;
 
+    // Связь сущности Product с сущностью Category
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
 
     public Long getId() {
         return id;
@@ -55,23 +58,22 @@ public class Product {
         this.description = description;
     }
 
-    public Long getCategoryId() {
-        return categoryId;
+
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(Category category) {
+        this.category = category;
     }
-
 
     public Product() {
     }
 
-    public Product(Long article, String name, double price, String description, Long categoryId) {
+    public Product(Long article, String name, double price, String description) {
         this.article = article;
         this.name = name;
         this.price = price;
         this.description = description;
-        this.categoryId = categoryId;
     }
 }

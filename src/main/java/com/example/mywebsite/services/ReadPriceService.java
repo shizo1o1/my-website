@@ -12,9 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ReadPriceService {
@@ -37,14 +35,16 @@ public class ReadPriceService {
         return count;
     }
 
-    public Map<String, List<String>> getProductsByCategory() throws IOException {
-        Map<String, List<String>> productsByCategory = new HashMap<>();
+    public void saveInDbCategoryProduct() throws IOException {
+        List<Product> products = new ArrayList<>();
+        List<Category> categories = new ArrayList<>();
+
+        // Очищаем таблицы category и product
+        productRepository.deleteAll();
+        categoryRepository.deleteAll();
 
         try (Workbook workbook = new HSSFWorkbook(new FileInputStream("src/main/resources/static/price.xls"))) {
-            Sheet sheet = workbook.getSheetAt(0); // get first sheet
-            String currentCategory = null;
-            List<String> currentProducts = new ArrayList<>();
-            Long categoryId = null;
+            Sheet sheet = workbook.getSheetAt(0); // Получаем первый лист
 
             for (Row row : sheet) {
                 Cell cell = row.getCell(2);
@@ -56,41 +56,32 @@ public class ReadPriceService {
                         cellValue = String.valueOf(cell.getNumericCellValue());
                     }
                     if (countLeadingSpaces(cellValue) == 8 && !cellValue.trim().equals("WARRANTY PROTECTION  HOLOGRAM VOID LABELS STICKERS")) {
-                        // Найдена новая категория товаров, сохраняем предыдущую категорию и товары
-                        if (currentCategory != null) {
-                            productsByCategory.put(currentCategory, currentProducts);
-                        }
-                        currentCategory = cellValue;
-                        currentProducts = new ArrayList<>();
-
-                        // Сохраняем категорию в базу данных
+                        // Сохраняем категорию в базе данных
                         Category category = new Category();
-                        category.setName(currentCategory);
-                        categoryRepository.save(category);
-                        categoryId = category.getId();
+                        category.setName(cellValue);
+                        categories.add(category);
                     } else if (row.getCell(1).getCellType() == CellType.NUMERIC) {
                         // Текущая строка содержит товар
                         Product product = new Product();
                         double article = row.getCell(1).getNumericCellValue();
-                        product.setArticle( (long)article );                               // артикул
+                        product.setArticle((long) article);                                // артикул
                         product.setName(cellValue);                                       // название продукта
                         product.setPrice(row.getCell(3).getNumericCellValue());        // цена
                         product.setDescription(String.valueOf(row.getCell(5)));       // гарантия/описание
-                        product.setCategoryId(categoryId);                              // ID категории
 
-                        currentProducts.add(cellValue);
-                        productRepository.save(product);
+                        // Устанавливаем категорию для продукта
+                        Category category = categories.get(categories.size() - 1);
+                        product.setCategory(category);
+
+                        products.add(product);
                     }
                 }
             }
 
-            // Сохраняем последнюю категорию и товары
-            if (currentCategory != null) {
-                productsByCategory.put(currentCategory, currentProducts);
-            }
+            // Сохраняем все категории и продукты в базе данных
+            categoryRepository.saveAll(categories);
+            productRepository.saveAll(products);
         }
-
-        return productsByCategory;
     }
 
 
