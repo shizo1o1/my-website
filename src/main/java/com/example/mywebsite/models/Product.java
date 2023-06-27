@@ -1,17 +1,18 @@
 package com.example.mywebsite.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int price, alliance_id, guarantee;
-    private String product_name;
+    private Long article;
+    private String name;
+    private double price;
+    @Column(length = 500)
+    private String description;
+    private Long categoryId;
 
     public Long getId() {
         return id;
@@ -21,45 +22,54 @@ public class Product {
         this.id = id;
     }
 
-    public int getPrice() {
+    public Long getArticle() {
+        return article;
+    }
+
+    public void setArticle(Long article) {
+        this.article = article;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
-    public int getAlliance_id() {
-        return alliance_id;
+    public String getDescription() {
+        return description;
     }
 
-    public void setAlliance_id(int alliance_id) {
-        this.alliance_id = alliance_id;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public int getGuarantee() {
-        return guarantee;
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public void setGuarantee(int guarantee) {
-        this.guarantee = guarantee;
-    }
-
-    public String getProduct_name() {
-        return product_name;
-    }
-
-    public void setProduct_name(String product_name) {
-        this.product_name = product_name;
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public Product() {
     }
 
-    public Product(int price, int alliance_id, int guarantee, String product_name) {
+    public Product(Long article, String name, double price, String description, Long categoryId) {
+        this.article = article;
+        this.name = name;
         this.price = price;
-        this.alliance_id = alliance_id;
-        this.guarantee = guarantee;
-        this.product_name = product_name;
+        this.description = description;
+        this.categoryId = categoryId;
     }
 }

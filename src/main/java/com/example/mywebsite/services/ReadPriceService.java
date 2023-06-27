@@ -1,52 +1,53 @@
 package com.example.mywebsite.services;
 
+import com.example.mywebsite.models.Category;
+import com.example.mywebsite.models.Product;
+import com.example.mywebsite.repository.CategoryRepository;
+import com.example.mywebsite.repository.ProductRepository;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReadPriceService {
 
-    public static List<List<String>> readExelFile () throws IOException{
-        List<List<String>> data = new ArrayList<>();
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
-        try (Workbook workbook = new HSSFWorkbook(new FileInputStream("src/main/resources/static/price.xls"))){
-            Sheet sheet = workbook.getSheetAt(0);
-            for (Row row : sheet){
-                List<String> rowData = new ArrayList<>();
-                for (Cell cell : row){
-                    String cellValue = "";
-                    if (cell.getCellType() == CellType.STRING){
-                        cellValue = cell.getStringCellValue();
-                    } else if (cell.getCellType() == CellType.NUMERIC) {
-                        cellValue = String.valueOf(cell.getNumericCellValue());
-                    }
-                    rowData.add(cellValue);
-                }
-                data.add(rowData);
+    public static int countLeadingSpaces(String str){
+        int count = 0;
+        for (int i =0; i < str.length(); i++){
+            if (str.charAt(i) == ' '){
+                count++;
+            }else {
+                break;
             }
         }
-        return data;
+
+        return count;
     }
 
-    public static int countLeadingSpacesTrimm(String str){
-        int originalLength = str.length();
-        int trimmedLength = str.trim().length();
-        return originalLength - trimmedLength;
-    }
-
-    public static List<String> getCellValueWithLeadingSpaces() throws IOException {
-        List<String> cellValues = new ArrayList<>();
+    public Map<String, List<String>> getProductsByCategory() throws IOException {
+        Map<String, List<String>> productsByCategory = new HashMap<>();
 
         try (Workbook workbook = new HSSFWorkbook(new FileInputStream("src/main/resources/static/price.xls"))) {
-            Sheet sheet = workbook.getSheetAt(0); // Получить первый лист
+            Sheet sheet = workbook.getSheetAt(0); // get first sheet
+            String currentCategory = null;
+            List<String> currentProducts = new ArrayList<>();
+            Long categoryId = null;
+
             for (Row row : sheet) {
-                Cell cell = row.getCell(1); // Второй столбец
+                Cell cell = row.getCell(2);
                 if (cell != null) {
                     String cellValue = "";
                     if (cell.getCellType() == CellType.STRING) {
@@ -54,26 +55,42 @@ public class ReadPriceService {
                     } else if (cell.getCellType() == CellType.NUMERIC) {
                         cellValue = String.valueOf(cell.getNumericCellValue());
                     }
-                    if (countLeadingSpaces(cellValue) == 8) {
-                        cellValues.add(cellValue);
+                    if (countLeadingSpaces(cellValue) == 8 && !cellValue.trim().equals("WARRANTY PROTECTION  HOLOGRAM VOID LABELS STICKERS")) {
+                        // Найдена новая категория товаров, сохраняем предыдущую категорию и товары
+                        if (currentCategory != null) {
+                            productsByCategory.put(currentCategory, currentProducts);
+                        }
+                        currentCategory = cellValue;
+                        currentProducts = new ArrayList<>();
+
+                        // Сохраняем категорию в базу данных
+                        Category category = new Category();
+                        category.setName(currentCategory);
+                        categoryRepository.save(category);
+                        categoryId = category.getId();
+                    } else if (row.getCell(1).getCellType() == CellType.NUMERIC) {
+                        // Текущая строка содержит товар
+                        Product product = new Product();
+                        double article = row.getCell(1).getNumericCellValue();
+                        product.setArticle( (long)article );                               // артикул
+                        product.setName(cellValue);                                       // название продукта
+                        product.setPrice(row.getCell(3).getNumericCellValue());        // цена
+                        product.setDescription(String.valueOf(row.getCell(5)));       // гарантия/описание
+                        product.setCategoryId(categoryId);                              // ID категории
+
+                        currentProducts.add(cellValue);
+                        productRepository.save(product);
                     }
                 }
             }
-        }
 
-        return cellValues;
-    }
-
-    private static int countLeadingSpaces(String text) {
-        int count = 0;
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == ' ') {
-                count++;
-            } else {
-                break;
+            // Сохраняем последнюю категорию и товары
+            if (currentCategory != null) {
+                productsByCategory.put(currentCategory, currentProducts);
             }
         }
-        return count;
+
+        return productsByCategory;
     }
 
 

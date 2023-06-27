@@ -9,7 +9,7 @@
 <body>
     <header th:insert="~{blocks/header :: header} " class="allert allert-info mt-2"></header>
 
-    <table>
+   <!-- <table>
         <thead>
             <tr>
                 <th>Col 1</th>
@@ -21,7 +21,14 @@
                 <td th:each="cell : ${row}" th:text="${cell}"></td>
             </tr>
         </tbody>
-    </table>
+    </table>-->
+
+    <h1>Category product</h1>
+    <ul>
+        <li th:each="category : ${categories}">
+            <a th:href="@{/category/{id}(id=${category.id})}" th:text="${category.name}"></a>
+        </li>
+    </ul>
 
     <footer th:insert="~{blocks/footer :: footer} "></footer>
 </body>
