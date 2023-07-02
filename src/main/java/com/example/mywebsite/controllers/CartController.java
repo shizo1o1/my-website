@@ -7,12 +7,13 @@ import com.example.mywebsite.repository.ProductRepository;
 import com.example.mywebsite.services.CartService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/cart")
@@ -30,12 +31,14 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public String addToCart(@RequestParam("productId") Long productId,
-                            HttpSession session) {
+    public ResponseEntity<String> addToCart(@RequestParam("productId") Long productId,
+                                            HttpSession session) {
         Product product = productRepository.findById(productId).orElse(null);
         cartService.addItemToCart(session, product);
-        return "redirect:/cart";
+
+        return ResponseEntity.ok().build();
     }
+
 
     @PostMapping("/remove")
     public String removeFromCart(@RequestParam("productId") Long productId,
@@ -45,14 +48,23 @@ public class CartController {
         return "redirect:/cart";
     }
 
-    @PostMapping("/update")
+    @PostMapping(value = "/update", produces = "text/plain")
+    @ResponseBody
     public String updateCartItem(@RequestParam("productId") Long productId,
                                  @RequestParam("quantity") int quantity,
                                  HttpSession session) {
         Product product = productRepository.findById(productId).orElse(null);
         cartService.updateItemQuantity(session, product, quantity);
-        return "redirect:/cart";
+        return "Success"; // или любой другой текстовый ответ
     }
+
+
+    @GetMapping("/api/cart/count")
+    @ResponseBody
+    public int getCartItemCount(HttpSession session) {
+        return cartService.getCartItemCount(session);
+    }
+
 
 }
 

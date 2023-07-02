@@ -40,4 +40,9 @@ public class CartService {
     private void saveCart(HttpSession session, Cart cart) {
         session.setAttribute(CART_SESSION_KEY, cart);
     }
+
+    public int getCartItemCount(HttpSession session) {
+        Cart cart = getCart(session);
+        return cart.getItems().size();
+    }
 }
