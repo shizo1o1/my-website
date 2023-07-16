@@ -1,7 +1,6 @@
 package com.example.mywebsite.controllers;
 
 import com.example.mywebsite.models.Cart;
-import com.example.mywebsite.models.CartItem;
 import com.example.mywebsite.models.Product;
 import com.example.mywebsite.repository.ProductRepository;
 import com.example.mywebsite.services.CartService;
@@ -11,9 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/cart")
@@ -64,6 +60,7 @@ public class CartController {
     public int getCartItemCount(HttpSession session) {
         return cartService.getCartItemCount(session);
     }
+
 
 
 }
