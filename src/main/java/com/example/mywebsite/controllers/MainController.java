@@ -29,15 +29,24 @@ public class MainController {
 
     @GetMapping("/")
         public  String showMainPage(Model model) throws IOException {
-            System.out.println("SSSTART JOB");
-            priceService.downlandPrice();
-            System.out.println("DOWLAND SUCCESS");
-            readPriceService.saveInDbCategoryProduct();
-            System.out.println("GOOOOOOOOOOOOOOD JOB");
             Iterable<Category> categories = categoryRepository.findAll();
             model.addAttribute("categories", categories);
             return "index";
         }
+
+    @GetMapping("/write")
+        public String writeToDB() throws IOException {
+        readPriceService.saveInDbCategoryProduct();
+        System.out.println("|||    PRODUCT WRITE TO DB    |||");
+        return "redirect:/";
+    }
+    @GetMapping("/dowland")
+        public String dowlandPrice() throws IOException {
+        System.out.println("SSSTART JOB");
+        priceService.downlandPrice();
+        System.out.println("|||    DOWLAND SUCCESS    |||");
+        return "redirect:/";
+    }
 
     @GetMapping("/category/{categoryId}/products")
         public String showProductByCategory(@PathVariable Long categoryId, Model model){
