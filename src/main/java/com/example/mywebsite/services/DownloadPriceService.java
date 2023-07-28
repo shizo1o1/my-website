@@ -19,7 +19,7 @@ public class DownloadPriceService {
     @Scheduled(cron = "0 00 10 * * ?")
     public void downlandPrice() throws IOException {
         String url = "http://www.alliance.web.kg/price.xls";
-        String filePath = "src/main/resources/static/price.xls";
+        String filePath = "/price.xls";
 
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("lock", "key1"));

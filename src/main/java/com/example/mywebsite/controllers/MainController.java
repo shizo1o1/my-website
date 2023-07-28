@@ -29,7 +29,11 @@ public class MainController {
 
     @GetMapping("/")
         public  String showMainPage(Model model) throws IOException {
-//            readPriceService.saveInDbCategoryProduct();
+            System.out.println("SSSTART JOB");
+            priceService.downlandPrice();
+            System.out.println("DOWLAND SUCCESS");
+            readPriceService.saveInDbCategoryProduct();
+            System.out.println("GOOOOOOOOOOOOOOD JOB");
             Iterable<Category> categories = categoryRepository.findAll();
             model.addAttribute("categories", categories);
             return "index";

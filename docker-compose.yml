@@ -6,22 +6,29 @@ services:
     build: .
     ports:
       - "8080:8080"
+    networks:
+      - springapipostgres-net
     depends_on:
       - db
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/my_web_site_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
 
   # Контейнер для базы данных PostgreSQL
   db:
-    image: postgres:13
+    image: postgres:12
+    ports:
+      - 5432:5432
+    networks:
+      - springapipostgres-net
     environment:
       POSTGRES_DB: my_web_site_db
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
     volumes:
       - db_data:/var/lib/postgresql/data
+
+networks:
+  springapipostgres-net:
 
 volumes:
   db_data:
