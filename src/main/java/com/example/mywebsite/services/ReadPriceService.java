@@ -43,7 +43,7 @@ public class ReadPriceService {
         productRepository.deleteAll();
         categoryRepository.deleteAll();
 
-        try (Workbook workbook = new HSSFWorkbook(new FileInputStream("/price.xls"))) {
+        try (Workbook workbook = new HSSFWorkbook(new FileInputStream("src/main/resources/static/price.xls"))) {
             Sheet sheet = workbook.getSheetAt(0); // Получаем первый лист
 
             for (Row row : sheet) {
