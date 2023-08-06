@@ -51,7 +51,7 @@ public class CartController {
                                  HttpSession session) {
         Product product = productRepository.findById(productId).orElse(null);
         cartService.updateItemQuantity(session, product, quantity);
-        return "Success"; // или любой другой текстовый ответ
+        return "Success";
     }
 
 

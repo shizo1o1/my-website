@@ -12,7 +12,7 @@ public class CartItem {
     @ManyToOne
     private Product product;
 
-    private String productName;  // New field to store the product name
+    private String productName;
 
     private int quantity;
 
