@@ -28,11 +28,18 @@ public class MainController {
     private ProductRepository productRepository;
 
     @GetMapping("/")
-        public  String showMainPage(Model model) throws IOException {
-            Iterable<Category> categories = categoryRepository.findAll();
-            model.addAttribute("categories", categories);
-            return "index";
-        }
+    public  String showMainPage(Model model) throws IOException {
+        Iterable<Category> categories = categoryRepository.findAll();
+        model.addAttribute("categories", categories);
+        return "index";
+    }
+
+    @GetMapping("main")
+    public  String showMain(Model model) throws IOException {
+        Iterable<Category> categories = categoryRepository.findAll();
+        model.addAttribute("categories", categories);
+        return "main";
+    }
 
     @GetMapping("/write")
         public String writeToDB() throws IOException {
