@@ -38,7 +38,7 @@ public class MainController {
     public  String showMain(Model model) throws IOException {
         Iterable<Category> categories = categoryRepository.findAll();
         model.addAttribute("categories", categories);
-        return "main";
+        return "index";
     }
 
     @GetMapping("/write")
